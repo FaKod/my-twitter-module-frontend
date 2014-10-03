@@ -1,0 +1,100 @@
+[
+    {
+        "graphname": "Top20 Provider HotelOnly",
+        "graphtype": "pie",
+        "tablespace": "requests_responses",
+        "key": "",
+        "sql": "\"Top 20 Hotel Providers\" select case SUBSTR(providerId,1,2) when \"04\" then \"Booking.com\" when \"90\" then \"Traveltainment/Bistro TT_HotelOnly_EUR AT\" when \"35\" then \"hotel.de\" when \"50\" then \"Traveltainment/Bistro TT_HotelOnly_EUR DE\" when \"66\" then \"ean/ian\" when \"f4\" then \"Traveltainment/Bistro TT_HotelOnly_CH CH\" when \"85\" then \"Traveltainment/Bistro TT_HotelOnly_EUR CH\" end as x, offerCount as y from top20_hotelonly"
+    },
+    {
+        "graphname": "Price Difference at VacancyCheck",
+        "graphtype": "bar",
+        "tablespace": "vacancy_check",
+        "key": "",
+        "sql": "\"Vacancy Checks\" SELECT created AS x, sum(count) AS y FROM vacancy_checks WHERE :date group by created ORDER BY created;\n\"Number of Price Differences\" SELECT created AS x, SUM(count) AS y FROM price_differences WHERE cluster NOT IN ('unknown', '=') and :date GROUP BY created ORDER BY created\n\"Price Difference with 50 or more\" SELECT created AS x, SUM(count) AS y FROM price_differences WHERE posOrNegative = 'positive' AND cluster = '>=50' and :date GROUP BY (created) ORDER BY created"
+    },
+    {
+        "graphname": "Compare all Availability Statuses",
+        "graphtype": "stacked-area",
+        "tablespace": "vacancy_check",
+        "key": "",
+        "sql": "\"Unknown\" SELECT created AS x, SUM(count) AS y FROM availability WHERE availability = 'UNKNOWN' and :date GROUP BY created ORDER BY created\n\"NOT Available\" SELECT created AS x, SUM(count) AS y FROM availability WHERE availability = 'NOT_AVAILABLE' and :date GROUP BY created ORDER BY created\n\"On Request\" SELECT created AS x, SUM(count) AS y FROM availability WHERE availability = 'ON_REQUEST' and :date GROUP BY created ORDER BY created\n\"To Confirm\" SELECT created AS x, SUM(count) AS y FROM availability WHERE availability = 'TO_CONFIRM' and :date GROUP BY created ORDER BY created\n\"Available\" SELECT created AS x, SUM(count) AS y FROM availability WHERE availability = 'AVAILABLE' and :date GROUP BY created ORDER BY created"
+    },
+    {
+        "graphname": "Availability",
+        "graphtype": "stacked-area",
+        "tablespace": "vacancy_check",
+        "key": "",
+        "sql": "\"Availability OK\" SELECT created AS x, SUM(count) AS y FROM availability WHERE availability IN ('AVAILABLE', 'TO_CONFIRM', 'ON_REQUEST') GROUP BY created ORDER BY created\n\"Availability NOK\" SELECT created AS x, SUM(count) AS y FROM availability WHERE availability IN ('NOT_AVAILABLE', 'UNKNOWN') GROUP BY created ORDER BY created"
+    },
+    {
+        "graphname": "Show overall availabilities",
+        "graphtype": "pie",
+        "tablespace": "vacancy_check",
+        "key": "",
+        "sql": "\"Overall Availabilities\" SELECT availability as x, COUNT(availability) as y FROM availability GROUP BY availability order by COUNT(availability)"
+    },
+    {
+        "graphname": "Number of Vacancy Checks per day with price differences",
+        "graphtype": "line",
+        "tablespace": "vacancy_check",
+        "key": "",
+        "sql": "\"Vacancy Checks\" SELECT created AS x, sum(count) AS y FROM vacancy_checks group by x ORDER BY created;\n\"Number of Price Differences\" SELECT created AS x, SUM(count) AS y FROM price_differences WHERE cluster NOT IN ('unknown', '=') GROUP BY created ORDER BY created\n\"Price Difference with 50 or more\" SELECT created AS x, SUM(count) AS y FROM price_differences WHERE posOrNegative = 'positive' AND cluster = '>=50' GROUP BY (created) ORDER BY created\n\"Number of Negative Price Differences\" SELECT created AS x, SUM(count) AS y FROM price_differences WHERE posOrNegative = 'negative' GROUP BY (created) ORDER BY created\n\"Number of Unknown Price Differences\" SELECT created AS x, SUM(count) AS y FROM price_differences WHERE posOrNegative = 'unknown' GROUP BY (created) ORDER BY created"
+    },
+    {
+        "graphname": "Hotels With Price",
+        "graphtype": "line",
+        "tablespace": "hotel_list",
+        "key": "",
+        "sql": "\"Hotel-Only Hotels With Price\" SELECT created AS x, SUM(count) AS y FROM hotel_only_hotels_with_price GROUP BY created ORDER BY created\n\"Package Hotels With Price\" SELECT created AS x, SUM(count) AS y FROM package_hotels_with_price GROUP BY created ORDER BY created"
+    },
+    {
+        "graphname": "Requested Hotels",
+        "graphtype": "line",
+        "tablespace": "hotel_list",
+        "key": "",
+        "sql": "\"Hotel-Only Requested Hotels\" SELECT created AS x, sum(count) AS y FROM hotel_only_requested_hotels group by x ORDER BY created\n\"Package Requested Hotels\" SELECT created AS x, sum(count) AS y FROM package_requested_hotels group by x ORDER BY created"
+    },
+    {
+        "graphname": "Top20 Provider Package",
+        "graphtype": "pie",
+        "tablespace": "requests_responses",
+        "key": "",
+        "sql": "\"Top 20 Package Providers\" select providerId as x, offerCount as y from top20_package"
+    },
+    {
+        "graphname": "All Orders vs Orders with Offers",
+        "graphtype": "line",
+        "tablespace": "requests_responses",
+        "key": "",
+        "sql": "\"Total Order Count\" select created as x, sum(orderCount) as y from orders where orderType = 'AllOffers' group by created order by created\n\"Hotel-Only Orders\" select created as x, sum(orderCount) as y from hotel_only_orders where orderType = 'AllOffers' group by created order by created\n\"Package Orders\" select created as x, sum(orderCount) as y from package_orders where orderType = 'AllOffers' group by created order by created"
+    },
+    {
+        "graphname": "Offers, ignore site and providerId",
+        "graphtype": "line",
+        "tablespace": "requests_responses",
+        "key": "",
+        "sql": "\"All Offers\" select created as x, sum(offerCount) as y from package_offers where orderType = 'AllOffers' group by created order by x"
+    },
+    {
+        "graphname": "MPGOrders and Offers for CH, AT, DE and AllOffers",
+        "graphtype": "line",
+        "tablespace": "requests_responses",
+        "key": "",
+        "sql": "\"CH-Orders\" select created as x, sum(orderCount) as y from package_orders where site = 'ch' and orderType = 'AllOffers' group by x order by x\n\"CH-Offers\" select created as x, sum(offerCount) as y from package_offers where site = 'ch' and orderType = 'AllOffers' group by x order by x\n\"AT-Orders\" select created as x, sum(orderCount) as y from package_orders where site = 'at' and orderType = 'AllOffers' group by x order by x\n\"AT-Offers\" select created as x, sum(offerCount) as y from package_offers where site = 'at' and orderType = 'AllOffers' group by x order by x\n\"DE-Orders\" select created as x, sum(orderCount) as y from package_orders where site = 'de' and orderType = 'AllOffers' group by x order by x\n\"DE-Offers\" select created as x, sum(offerCount) as y from package_offers where site = 'de' and orderType = 'AllOffers' group by x order by x"
+    },
+    {
+        "graphname": "Package: Requested Hotels vs. Hotels with offers",
+        "graphtype": "bar",
+        "tablespace": "hotel_list",
+        "key": "",
+        "sql": "\"Package Requested Hotels\" SELECT created AS x, SUM(count) AS y FROM package_requested_hotels group by created ORDER BY created\n\"Package Hotels With Price\" SELECT created AS x, SUM(count) AS y FROM package_hotels_with_price GROUP BY created ORDER BY created"
+    },
+    {
+        "graphname": "Amount of Availabilities",
+        "graphtype": "pie",
+        "tablespace": "vacancy_check",
+        "key": "",
+        "sql": "SELECT availability AS x, SUM(count) AS y FROM availability GROUP BY availability"
+    }
+]
